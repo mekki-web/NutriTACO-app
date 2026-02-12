@@ -324,11 +324,16 @@ class DiaryViewModel @Inject constructor(
         var totalPyridoxine = 0.0
 
         val consumedLogs = logs.filter { it.log.isConsumed }
+        
+        // Accumulate per-date calories during the single pass to avoid redundant calculations
+        val caloriesByDate = mutableMapOf<String, Double>()
 
         consumedLogs.forEach { item ->
             val n =
                 NutrientCalculator.calcularNutrientesParaPorcao(item.food, item.log.quantityGrams)
-            totalKcal += n.energiaKcal ?: 0.0
+            val kcal = n.energiaKcal ?: 0.0
+            
+            totalKcal += kcal
             totalProtein += n.proteina ?: 0.0
             totalCarbs += n.carboidratos ?: 0.0
             totalFat += n.lipidios?.total ?: 0.0
@@ -347,19 +352,15 @@ class DiaryViewModel @Inject constructor(
             totalRiboflavin += n.riboflavina ?: 0.0
             totalNiacin += n.niacina ?: 0.0
             totalPyridoxine += n.piridoxina ?: 0.0
+            
+            // Accumulate per-date calories
+            caloriesByDate[item.log.date] = (caloriesByDate[item.log.date] ?: 0.0) + kcal
         }
 
-        val logsByDate = consumedLogs.groupBy { it.log.date }
-        val daysLogged = logsByDate.keys.size
+        val daysLogged = caloriesByDate.keys.size
 
-        val dailyCalories = logsByDate.map { (dateStr, dayLogs) ->
+        val dailyCalories = caloriesByDate.map { (dateStr, kcal) ->
             val date = LocalDate.parse(dateStr)
-            val kcal = dayLogs.sumOf { item ->
-                NutrientCalculator.calcularNutrientesParaPorcao(
-                    item.food,
-                    item.log.quantityGrams
-                ).energiaKcal ?: 0.0
-            }
             DailyCalorieEntry(date, kcal, goalKcal)
         }.sortedBy { it.date }
 

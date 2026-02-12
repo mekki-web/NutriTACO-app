@@ -333,6 +333,12 @@ class FoodSearchManager(
         }
     }
 
+    // Helper function to check if a nutrient value is within a range
+    private fun checkRange(value: Double?, min: Double?, max: Double?): Boolean {
+        val v = value ?: 0.0
+        return (min == null || v >= min) && (max == null || v <= max)
+    }
+
     private fun applyFilters(foods: List<Food>, filters: FoodFilterState): List<Food> {
         // Early return if no filters are active
         if (!filters.hasAdvancedFilters && filters.source == FoodSource.ALL && filters.selectedCategories.isEmpty()) {
@@ -351,12 +357,6 @@ class FoodSearchManager(
             // Check category filter
             if (filters.selectedCategories.isNotEmpty() && food.category !in filters.selectedCategories) {
                 return@filter false
-            }
-
-            // Inline helper to check range filters more efficiently
-            fun checkRange(value: Double?, min: Double?, max: Double?): Boolean {
-                val v = value ?: 0.0
-                return (min == null || v >= min) && (max == null || v <= max)
             }
 
             // Macronutrients

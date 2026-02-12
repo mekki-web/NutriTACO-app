@@ -1955,7 +1955,7 @@ fun ImportDietDialog(
                 if (diets.isEmpty()) {
                     item { Text("Você ainda não criou nenhuma dieta.") }
                 }
-                items(diets) { diet ->
+                items(diets, key = { it.id }) { diet ->
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
