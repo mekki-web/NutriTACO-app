@@ -68,8 +68,11 @@ class DiaryRepository @Inject constructor(
         }
 
         dailyLogDao.insertAll(newLogs)
-        newLogs.forEach { log ->
-            foodDao.incrementUsageCount(log.foodId)
+        
+        // Batch update usage counts instead of N individual queries
+        val foodIds = newLogs.map { it.foodId }.distinct()
+        if (foodIds.isNotEmpty()) {
+            foodDao.incrementUsageCountForIds(foodIds)
         }
     }
 

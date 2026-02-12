@@ -107,6 +107,12 @@ class FoodDatabaseViewModel @Inject constructor(
 
     private fun applyFilters(foods: List<Food>, filters: CombinedFilters): List<Food> {
         val advanced = filters.advanced
+        
+        // Precompute normalized query once instead of per-food
+        val normalizedQuery = if (filters.query.isNotBlank()) {
+            filters.query.normalizeForSearch()
+        } else null
+        
         return foods.asSequence().filter { food ->
             when (filters.source) {
                 FoodSource.TACO -> !food.isCustom
@@ -116,9 +122,8 @@ class FoodDatabaseViewModel @Inject constructor(
         }.filter { food ->
             filters.categories.isEmpty() || food.category in filters.categories
         }.filter { food ->
-            if (filters.query.isBlank()) true
+            if (normalizedQuery == null) true
             else {
-                val normalizedQuery = filters.query.normalizeForSearch()
                 val normalizedName = food.name.normalizeForSearch()
                 normalizedName.contains(normalizedQuery)
             }

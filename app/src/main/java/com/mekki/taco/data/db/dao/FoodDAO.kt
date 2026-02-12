@@ -165,6 +165,13 @@ abstract class FoodDao {
     @Query("UPDATE foods SET usageCount = usageCount + 1 WHERE id = :id")
     abstract suspend fun incrementUsageCount(id: Int)
 
+    /**
+     * Batch increment usage count for multiple foods in a single query.
+     * Replaces N individual UPDATE queries with one WHERE IN query.
+     */
+    @Query("UPDATE foods SET usageCount = usageCount + 1 WHERE id IN (:foodIds)")
+    abstract suspend fun incrementUsageCountForIds(foodIds: List<Int>)
+
     @Query("SELECT * FROM foods WHERE category = :categoria ORDER BY name ASC")
     abstract fun getFoodsByCategory(categoria: String): Flow<List<Food>>
 
