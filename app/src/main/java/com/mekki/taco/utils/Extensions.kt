@@ -9,7 +9,7 @@ private val ACCENT_REPLACEMENTS = mapOf(
     'í' to 'i', 'ì' to 'i', 'î' to 'i', 'ï' to 'i',
     'ó' to 'o', 'ò' to 'o', 'õ' to 'o', 'ô' to 'o', 'ö' to 'o',
     'ú' to 'u', 'ù' to 'u', 'û' to 'u', 'ü' to 'u',
-    'ç' to 'c', 'ñ to 'n',
+    'ç' to 'c', 'ñ' to 'n',
     'Á' to 'A', 'À' to 'A', 'Ã' to 'A', 'Â' to 'A', 'Ä' to 'A',
     'É' to 'E', 'È' to 'E', 'Ê' to 'E', 'Ë' to 'E',
     'Í' to 'I', 'Ì' to 'I', 'Î' to 'I', 'Ï' to 'I',
