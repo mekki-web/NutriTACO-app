@@ -138,11 +138,13 @@ class DiaryViewModel @Inject constructor(
 
     private fun loadDiets() {
         viewModelScope.launch {
-            dietDao.getAllDiets().collect { _availableDiets.value = it }
-        }
-        viewModelScope.launch {
-            dietDao.getLatestDietWithItems().collect { dietWithItems ->
-                _mainDietCalorieGoal.value = dietWithItems?.diet?.calorieGoals
+            launch {
+                dietDao.getAllDiets().collect { _availableDiets.value = it }
+            }
+            launch {
+                dietDao.getLatestDietWithItems().collect { dietWithItems ->
+                    _mainDietCalorieGoal.value = dietWithItems?.diet?.calorieGoals
+                }
             }
         }
     }

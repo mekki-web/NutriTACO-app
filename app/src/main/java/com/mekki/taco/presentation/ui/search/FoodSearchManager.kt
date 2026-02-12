@@ -198,10 +198,24 @@ class FoodSearchManager(
         val queryParts = tokens.map { token ->
             val forms = mutableSetOf<String>()
 
-            val stem = if (token.length > 3 && token.endsWith("s")) token.dropLast(1) else token
+            // Improved Portuguese plural handling
+            val stem = when {
+                // Words ending in "ões" -> singular is "ão" (ex: limões -> limão)
+                token.length > 4 && token.endsWith("oes") -> token.dropLast(3) + "ao"
+                // Words ending in "ães" -> singular is "ão" (ex: pães -> pão)
+                token.length > 4 && token.endsWith("aes") -> token.dropLast(3) + "ao"
+                // Words ending in "es" with length > 4 -> try removing "es" (ex: tomates -> tomat)
+                token.length > 4 && token.endsWith("es") -> token.dropLast(2)
+                // Words ending in "s" with length > 4 -> try removing "s" (ex: bananas -> banana)
+                // But avoid words where "s" is part of the root (like "paus")
+                token.length > 4 && token.endsWith("s") && !token.endsWith("us") -> token.dropLast(1)
+                else -> token
+            }
 
             forms.add(token)
-            forms.add(stem)
+            if (stem != token) {
+                forms.add(stem)
+            }
 
             synonyms[token]?.let { forms.addAll(it) }
             synonyms[stem]?.let { forms.addAll(it) }
